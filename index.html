@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>筛选切片器</title>
+<script src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ml-nj6l7vqol/vchart/plugin-sdk.js"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}.filter-wrap{width:100%;height:100%;padding:12px;}.filter-item{margin-bottom:12px;}.filter-label{display:inline-block;margin-bottom:4px;}.filter-select{width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:4px;outline:none;}</style>
+</head>
+<body>
+<div class="filter-wrap" id="app"></div>
+<script>
+const plugin=window.useMultidbWidgetPlugin?.()||window.widgetPlugin;const appDom=document.getElementById('app');let tableData=null;plugin.mount({onConfigChange:e=>{tableData&&renderFilter(e,tableData)}});plugin.onDataReady(e=>{tableData=e;const t=plugin.getConfig()||{};renderFilter(t,e)});function renderFilter(e,t){appDom.innerHTML="";const{columns:n,rows:r}=t,o=e.fields||[],i=e.multiSelect===true,l=e.fontSize||14,a=e.bgColor||"#ffffff",s=e.textColor||"#333333",u=e.selectBg||"#ffffff",c=document.createElement("style");c.textContent=`\n.filter-wrap{background:${a};}\n.filter-label{font-size:${l}px;color:${s};}\n.filter-select{font-size:${l}px;background:${u};color:${s};}\n`;document.head.appendChild(c);o.forEach(e=>{const t=n.find(n=>n.title===e);if(t){const n=[...new Set(r.map(n=>n[t.index]?.value||"").filter(n=>n))].sort(),i=document.createElement("div");i.className="filter-item";i.innerHTML=`\n<label class="filter-label">${e}</label>\n<select class="filter-select" data-field="${e}" ${i?"multiple":""}>\n<option value="">全部</option>\n${n.map(e=>`<option value="${e}">${e}</option>`).join("")}\n</select>\n`;appDom.appendChild(i);const l=i.querySelector(".filter-select");l.addEventListener("change",()=>{dispatchFilter()})}})}function dispatchFilter(){const e=document.querySelectorAll(".filter-select");let t=[];e.forEach(n=>{let r=[];n.multiple?r=Array.from(n.selectedOptions).map(e=>e.value).filter(e=>e):n.value&&(r=[n.value]);r.length>0&&t.push({field:n.dataset.field,values:r})});plugin.setFilter({filters:t})}
+</script>
+</body>
+</html>
